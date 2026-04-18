@@ -5,7 +5,7 @@ import SearchBar from "../../components/search-bar";
 import CourseCounter from "../../components/course-counter";
 
 const Courses = () => {
-  const courses = []; // luego vendrá de API
+  const courses = []; 
 
   return (
     <div>
