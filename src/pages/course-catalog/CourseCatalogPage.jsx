@@ -132,6 +132,9 @@ export default function CourseCatalogPage() {
     if (busqueda && !c.titulo.toLowerCase().includes(busqueda.toLowerCase()) && !c.descripcion.toLowerCase().includes(busqueda.toLowerCase())) return false;
     return true;
   });
+const totalCupos = cursos.reduce((total, curso) => total + curso.max, 0);
+const totalInscritos = cursos.reduce((total, curso) => total + curso.inscritos, 0);
+const cursosConCupos = cursos.filter((curso) => curso.max > curso.inscritos).length;
 
   const isInscrito = (cursoId) => inscripciones.some((i) => i.curso_id === cursoId);
   const canManageCurso = (curso) => {
@@ -152,8 +155,22 @@ export default function CourseCatalogPage() {
         {canCreateCurso && (
           <button className="btn btn-primary" onClick={openCreateCurso}>
             <Plus size={16} /> Nuevo curso
-          </button>
+          </button>   
         )}
+        <div className="grid-3" style={{ marginBottom: 24 }}>
+  <div className="stat-card">
+    <span className="stat-label">Cursos con cupos</span>
+    <span className="stat-value">{cursosConCupos}</span>
+  </div>
+  <div className="stat-card">
+    <span className="stat-label">Cupos totales</span>
+    <span className="stat-value">{totalCupos}</span>
+  </div>
+  <div className="stat-card">
+    <span className="stat-label">Inscritos</span>
+    <span className="stat-value">{totalInscritos}</span>
+  </div>
+</div>
       </div>
 
       {revalidator.state !== 'idle' && <Spinner text="Actualizando..." />}
