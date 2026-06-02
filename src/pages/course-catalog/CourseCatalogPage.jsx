@@ -30,6 +30,7 @@ export default function CourseCatalogPage() {
   const [busqueda, setBusqueda] = React.useState('');
   const [filtroNivel, setFiltroNivel] = React.useState(null);
   const [soloDisponibles, setSoloDisponibles] = React.useState(false);
+  const [ordenCursos, setOrdenCursos] = React.useState('recientes');
   const [detalleCurso, setDetalleCurso] = React.useState(null);
   const [modalCurso, setModalCurso] = React.useState(null);
 
@@ -132,6 +133,13 @@ export default function CourseCatalogPage() {
     if (busqueda && !c.titulo.toLowerCase().includes(busqueda.toLowerCase()) && !c.descripcion.toLowerCase().includes(busqueda.toLowerCase())) return false;
     return true;
   });
+
+  const cursosOrdenados = [...cursosFiltrados].sort((a, b) => {
+    if (ordenCursos === 'titulo') return a.titulo.localeCompare(b.titulo);
+    if (ordenCursos === 'cupos') return (b.max - b.inscritos) - (a.max - a.inscritos);
+    return b.id - a.id;
+  });
+
 const totalCupos = cursos.reduce((total, curso) => total + curso.max, 0);
 const totalInscritos = cursos.reduce((total, curso) => total + curso.inscritos, 0);
 const cursosConCupos = cursos.filter((curso) => curso.max > curso.inscritos).length;
@@ -211,6 +219,16 @@ const cursosConCupos = cursos.filter((curso) => curso.max > curso.inscritos).len
           >
             Con cupos
           </span>
+          <select
+            className="form-input"
+            value={ordenCursos}
+            onChange={(e) => setOrdenCursos(e.target.value)}
+            style={{ width: 180 }}
+          >
+            <option value="recientes">Mas recientes</option>
+            <option value="titulo">Titulo A-Z</option>
+            <option value="cupos">Mas cupos</option>
+          </select>
         </div>
       </div>
 
@@ -218,7 +236,7 @@ const cursosConCupos = cursos.filter((curso) => curso.max > curso.inscritos).len
         <EmptyState icon={<BookOpen size={44} color={COLORS.textMuted} />} title="No se encontraron cursos" subtitle="Prueba con otros filtros o terminos de busqueda" />
       ) : (
         <div className="grid-3">
-          {cursosFiltrados.map((c) => (
+          {cursosOrdenados.map((c) => (
             <div key={c.id} style={{ position: 'relative' }}>
               <CourseCard curso={c} categorias={categorias} inscrito={isInscrito(c.id)} onEnroll={handleEnroll} onDetail={setDetalleCurso} />
               {canManageCurso(c) && (
